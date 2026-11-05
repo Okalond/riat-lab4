@@ -1,11 +1,13 @@
-# Лабораторная работа № 4: CircleCI
+# Лабораторная работа № 4: GitHub Actions
 
-Простое Python-приложение `add(a, b)` с тестами pytest и конфигурацией CircleCI.
+Простое Python-приложение `add(a, b)` с 11 тестами pytest и конфигурацией GitHub Actions.
 В методическом задании нет отдельных вариантов.
 
 Репозиторий: https://github.com/Okalond/riat-lab4
 
-Пайплайны: https://app.circleci.com/pipelines/github/Okalond/riat-lab4
+Пайплайны: https://github.com/Okalond/riat-lab4/actions/workflows/ci.yml
+
+[![Python CI](https://github.com/Okalond/riat-lab4/actions/workflows/ci.yml/badge.svg)](https://github.com/Okalond/riat-lab4/actions/workflows/ci.yml)
 
 ## Запуск приложения
 
@@ -36,16 +38,19 @@ python -m venv .venv
 .\.venv\Scripts\python.exe -m black --check app.py test_app.py
 ```
 
-## CircleCI
+## GitHub Actions
 
-Файл `.circleci/config.yml` содержит два задания, запускаемых параллельно:
+Файл `.github/workflows/ci.yml` содержит два задания, запускаемых параллельно:
 
 - `test`: установка зависимостей и запуск pytest. Любой проваленный тест
-  завершает задание с ошибкой. Результаты сохраняются в формате JUnit.
+  завершает задание с ошибкой. Результаты сохраняются в формате JUnit
+  в скачиваемом артефакте `pytest-results` на 14 дней.
 - `lint`: проверка форматирования через `black --check`.
 
-Оба задания используют официальный образ `cimg/python:3.11` и кэш pip.
-Workflow `build-and-test` успешен только при успешном завершении обоих заданий.
+Оба задания используют Ubuntu 24.04, Python 3.11 и кэш pip.
+Workflow `Python CI` успешен только при успешном завершении обоих заданий.
+Проверки запускаются автоматически после `push` и при создании или обновлении
+pull request; также доступен ручной запуск.
 
 Для запуска в облаке:
 
@@ -58,9 +63,16 @@ Workflow `build-and-test` успешен только при успешном з
    git push
    ```
 
-3. В CircleCI подключить репозиторий, выбрать существующий файл
-   `.circleci/config.yml` из ветки `main` и запустить pipeline.
-4. Дождаться успешного завершения `test` и `lint`, проверить шаги
+3. В репозитории открыть **Actions → Python CI** и выбрать запуск.
+   Для повторного ручного запуска нажать **Run workflow** для ветки `main`.
+4. Дождаться успешного завершения **Tests (pytest)** и **Formatting (Black)**, проверить шаги
    `Install dependencies`, `Run tests` и `Check code formatting`.
 
-Локальный запуск тестов проверяет код, но не заменяет запуск pipeline в CircleCI.
+Локальный запуск тестов проверяет код, но не заменяет запуск workflow в GitHub Actions.
+
+## Исходная настройка CircleCI
+
+В исходной методичке указан CircleCI. После ограничения доступа к сервису
+проект переведён на GitHub Actions с теми же тестами и проверкой форматирования.
+Первоначальная конфигурация `.circleci/config.yml` сохранена для истории;
+рабочая конфигурация CI находится в `.github/workflows/ci.yml`.
